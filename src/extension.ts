@@ -40,8 +40,6 @@ export function activate(context: vscode.ExtensionContext) {
 					text = cases[caseIndex](raw);
 					caseIndex = (caseIndex + 1) % cases.length;
 
-					vscode.window.showInformationMessage('caseIndex: ' + caseIndex + ',prevIndex:' + prevIndex);
-
 					if (caseIndex === prevIndex) {
 						vscode.window.showInformationMessage(`无法对'` + raw + `'进行转换，可能是不规范的命名法!`);
 						return;
