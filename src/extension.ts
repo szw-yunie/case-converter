@@ -3,8 +3,14 @@
 import * as vscode from 'vscode';
 import { toBlankCase, toKebabCase, toLowerCamelCase, toUnderScoreCase, toUpperCamelCase } from './NameUtil';
 
-let countConvert = 0;
-let countUpperOrLower = 0;
+let caseIndex = 0;
+const cases: ((s: string) => string)[] = [
+	toLowerCamelCase,
+	toUpperCamelCase,
+	toUnderScoreCase,
+	toKebabCase,
+	toBlankCase
+];
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -17,71 +23,54 @@ export function activate(context: vscode.ExtensionContext) {
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with registerCommand
 	// The commandId parameter must match the command field in package.json
-	let disposableConvert = vscode.commands.registerCommand('case-converter.convert', () => {
-		const activeTextEditor = vscode.window.activeTextEditor;
-		if (!activeTextEditor) { return; }
+	let disposableConvert = vscode.commands.registerCommand('case-converter.convert',
+		function convert() {
+			const activeTextEditor = vscode.window.activeTextEditor;
+			if (!activeTextEditor) { return; }
 
-		activeTextEditor.edit(editBuilder => {
-			countConvert++;
+			activeTextEditor.edit(editBuilder => {
+				const start = activeTextEditor.selection.start;
+				const end = activeTextEditor.selection.end;
+				const selectionRange = new vscode.Range(start, end);
+				const raw = activeTextEditor.document.getText(selectionRange);
 
-			const start = activeTextEditor.selection.start;
-			const end = activeTextEditor.selection.end;
-			const selectionRange = new vscode.Range(start, end);
-			const raw = activeTextEditor.document.getText(selectionRange);
+				const prevIndex = caseIndex;
+				let text = raw;
+				do {
+					text = cases[caseIndex](raw);
+					caseIndex = (caseIndex + 1) % cases.length;
 
-			let text = '';
-			switch (countConvert) {
-				case 1:
-					text = toUpperCamelCase(raw);
-					break;
-				case 2:
-					text = toLowerCamelCase(raw);
-					break;
-				case 3:
-					text = toUnderScoreCase(raw);
-					break;
-				case 4:
-					text = toKebabCase(raw);
-					break;
-				case 5:
-					text = toBlankCase(raw);
-					countConvert = 0;
-					break;
-				default:
-					break;
-			}
+					vscode.window.showInformationMessage('caseIndex: ' + caseIndex + ',prevIndex:' + prevIndex);
 
-			editBuilder.replace(selectionRange, text);
+					if (caseIndex === prevIndex) {
+						vscode.window.showInformationMessage(`无法对'` + raw + `'进行转换，可能是不规范的命名法!`);
+						return;
+					}
+				} while (text === raw);
+
+				editBuilder.replace(selectionRange, text);
+			});
 		});
-	});
 
-	let disposableUpperOrLower = vscode.commands.registerCommand('case-converter.upperOrLower', () => {
-		const activeTextEditor = vscode.window.activeTextEditor;
-		if (!activeTextEditor) { return; }
+	let disposableUpperOrLower = vscode.commands.registerCommand('case-converter.upperOrLower',
+		function upperOrLower() {
+			const activeTextEditor = vscode.window.activeTextEditor;
+			if (!activeTextEditor) { return; }
 
-		activeTextEditor.edit(editBuilder => {
-			countUpperOrLower++;
+			activeTextEditor.edit(editBuilder => {
+				const start = activeTextEditor.selection.start;
+				const end = activeTextEditor.selection.end;
+				const selectionRange = new vscode.Range(start, end);
+				const raw = activeTextEditor.document.getText(selectionRange);
 
-			const start = activeTextEditor.selection.start;
-			const end = activeTextEditor.selection.end;
-			const selectionRange = new vscode.Range(start, end);
-			const raw = activeTextEditor.document.getText(selectionRange);
-
-			let text = '';
-			switch (countUpperOrLower) {
-				case 1:
-					text = raw.toUpperCase();
-					break;
-				case 2:
+				let text = raw.toUpperCase();
+				if (text === raw) {
 					text = raw.toLowerCase();
-					countUpperOrLower = 0;
-					break;
-				default:
-					break;
-			}
-			editBuilder.replace(selectionRange, text);
+				}
+
+				editBuilder.replace(selectionRange, text);
+			});
 		});
-	});
 
 	context.subscriptions.push(disposableConvert);
 	context.subscriptions.push(disposableUpperOrLower);

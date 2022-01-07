@@ -8,12 +8,12 @@ export function toLowerCamelCase(s: string) {
 }
 
 export function toUnderScoreCase(s: string) {
-    return toSeparatorCase(s, ['-',' '], '_');
+    return toSeparatorCase(s, ['-', ' '], '_');
 
 }
 
 export function toKebabCase(s: string) {
-    return toSeparatorCase(s, ['_',' '], '-');
+    return toSeparatorCase(s, ['_', ' '], '-');
 }
 
 export function toBlankCase(s: string) {
@@ -66,7 +66,7 @@ function toSeparatorCase(s: string, from: string[], to: string) {
         ch = s.charAt(i);
         if (from.find((value: string) => value === ch)) {
             ch = to;
-        } else if (ch.charCodeAt(0) <= 90) {
+        } else if (isUpperCase(ch.charCodeAt(0))) {
             result += to;
             ch = ch.toLowerCase();
         }
@@ -74,4 +74,8 @@ function toSeparatorCase(s: string, from: string[], to: string) {
     }
 
     return result;
+}
+
+function isUpperCase(ch: number) {
+    return ch >= 65 && ch <= 90;
 }
