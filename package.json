@@ -48,6 +48,15 @@
 		"lint": "eslint src --ext ts",
 		"test": "node ./out/test/runTest.js"
 	},
+	"license": "SEE LICENSE IN LICENSE",
+	"bugs": {
+		"url": "https://github.com/szw-yunie/case-converter/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/szw-yunie/case-converter"
+	},
+	"homepage": "https://github.com/szw-yunie/case-converter",
 	"devDependencies": {
 		"@types/vscode": "^1.63.0",
 		"@types/glob": "^7.1.4",
