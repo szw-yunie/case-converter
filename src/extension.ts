@@ -34,16 +34,18 @@ export function activate(context: vscode.ExtensionContext) {
 				const selectionRange = new vscode.Range(start, end);
 				const raw = activeTextEditor.document.getText(selectionRange);
 
-				const prevIndex = caseIndex;
 				let text = raw;
+				let count = 0;
 				do {
-					text = cases[caseIndex](raw);
-					caseIndex = (caseIndex + 1) % cases.length;
-
-					if (caseIndex === prevIndex) {
+					if (count === cases.length) {
 						vscode.window.showInformationMessage(`无法对'` + raw + `'进行转换，可能是不规范的命名法!`);
 						return;
 					}
+					
+					text = cases[caseIndex](raw);
+					caseIndex = (caseIndex + 1) % cases.length;
+
+					count++;
 				} while (text === raw);
 
 				editBuilder.replace(selectionRange, text);
