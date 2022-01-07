@@ -29,8 +29,6 @@ export function activate(context: vscode.ExtensionContext) {
 			const selectionRange = new vscode.Range(start, end);
 			const raw = activeTextEditor.document.getText(selectionRange);
 
-			vscode.window.showInformationMessage('raw: ' + raw);
-
 			let text = '';
 			switch (countConvert) {
 				case 1:
@@ -68,8 +66,6 @@ export function activate(context: vscode.ExtensionContext) {
 			const end = activeTextEditor.selection.end;
 			const selectionRange = new vscode.Range(start, end);
 			const raw = activeTextEditor.document.getText(selectionRange);
-
-			vscode.window.showInformationMessage('raw: ' + raw);
 
 			let text = '';
 			switch (countUpperOrLower) {
