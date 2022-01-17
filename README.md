@@ -8,4 +8,4 @@
 
 命名法转换：ctrl+alt+u 或 cmd+alt+u
 
-大小写转换：ctrl+alt+u 或 cmd+alt+u
+大小写转换：ctrl+alt+shift+u 或 cmd+alt+shift+u
