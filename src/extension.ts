@@ -29,19 +29,31 @@ export function activate(context: vscode.ExtensionContext) {
 			if (!activeTextEditor) { return; }
 
 			activeTextEditor.edit(editBuilder => {
-				const start = activeTextEditor.selection.start;
-				const end = activeTextEditor.selection.end;
-				const selectionRange = new vscode.Range(start, end);
-				const raw = activeTextEditor.document.getText(selectionRange);
+				const selection = activeTextEditor.selection;
+				const document = activeTextEditor.document;
 
+				let selectionRange: vscode.Range;
+
+				// Auto select word range at the position of the cursor when the user doesn't select any word range.
+				if (selection.isEmpty) {
+					selectionRange = document.getWordRangeAtPosition(
+						selection.active
+					) as vscode.Range;
+					activeTextEditor.selection = new vscode.Selection(selectionRange.start, selectionRange.end);
+				} else
+					selectionRange = new vscode.Range(selection.start, selection.end);
+
+				const raw = document.getText(selectionRange);
 				let text = raw;
 				let count = 0;
+				// Find next case which make text different from the raw.
 				do {
+
 					if (count === cases.length) {
-						vscode.window.showInformationMessage(`无法对'` + raw + `'进行转换，可能是不规范的命名法!`);
+						vscode.window.showInformationMessage(`Can not convert'` + raw + `'! It may be use a nonstandard nomenclature.`);
 						return;
 					}
-					
+
 					text = cases[caseIndex](raw);
 					caseIndex = (caseIndex + 1) % cases.length;
 
@@ -58,11 +70,20 @@ export function activate(context: vscode.ExtensionContext) {
 			if (!activeTextEditor) { return; }
 
 			activeTextEditor.edit(editBuilder => {
-				const start = activeTextEditor.selection.start;
-				const end = activeTextEditor.selection.end;
-				const selectionRange = new vscode.Range(start, end);
-				const raw = activeTextEditor.document.getText(selectionRange);
+				const selection = activeTextEditor.selection;
+				const document = activeTextEditor.document;
 
+				let selectionRange: vscode.Range;
+				// Auto select word range at the position of the cursor when the user doesn't select any word range.
+				if (selection.isEmpty) {
+					selectionRange = document.getWordRangeAtPosition(
+						selection.active
+					) as vscode.Range;
+					activeTextEditor.selection = new vscode.Selection(selectionRange.start, selectionRange.end);
+				} else
+					selectionRange = new vscode.Range(selection.start, selection.end);
+
+				const raw = document.getText(selectionRange);
 				let text = raw.toUpperCase();
 				if (text === raw) {
 					text = raw.toLowerCase();
